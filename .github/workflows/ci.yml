@@ -1,49 +1,35 @@
-name: CI
+name: Deploy static content to Pages
 
 on:
+  # Runs on pushes targeting the default branch
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches: ["main"]
 
-# 같은 브랜치에 연속으로 푸시하면 이전 실행을 취소한다.
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  verify:
-    name: 타입 · 린트 · 테스트 · 빌드
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          # 로컬과 CI가 같은 Node를 쓰도록 .nvmrc 한 곳에서 읽는다.
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: 의존성 설치
-        run: npm ci
-
-      - name: 타입 검사
-        run: npm run typecheck
-
-      - name: 린트
-        run: npx eslint . --max-warnings=0
-
-      - name: 포맷 검사
-        run: npm run format:check
-
-      - name: 테스트
-        run: npm run test
-
-      # 빌드는 반드시 게이트에 포함한다. SSR에서만 드러나는 오류
-      # (window 접근, JSX 런타임 불일치)는 개발 서버에서 전혀 나타나지 않고
-      # gatsby build에서만 터진다. 이 저장소에서 실제로 그런 일이 있었다.
-      - name: 프로덕션 빌드
-        run: npm run build
-        env:
-          GATSBY_SITE_URL: https://chantrieu191223.github.io/
+          # This tells GitHub to grab your public folder instead of the root
+          path: './public'
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
