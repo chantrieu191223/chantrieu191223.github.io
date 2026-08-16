@@ -1,0 +1,27 @@
+/*
+ * 카카오맵 임베드가 삽입하는 마크업에만 적용되는 보정.
+ *
+ * 이 요소들은 외부 스크립트가 런타임에 만들어 넣으므로 styled-components의
+ * 범위 밖에 있다. 전역 스타일·폰트·애니메이션 선언은 GlobalStyle.ts로 옮겼다.
+ */
+
+.root_daum_roughmap {
+  width: 100% !important;
+  max-height: 240px !important;
+}
+
+.root_daum_roughmap_landing {
+  margin: auto !important;
+}
+
+/*
+ * 임베드가 기본으로 넣는 확대·축소 및 길찾기 버튼을 감춘다.
+ * 대체 경로는 "카카오맵에서 길찾기" 링크가 상시 제공한다.
+ *
+ * 두 선택자 모두 .root_daum_roughmap 하위로 한정한다. 스코프가 없으면
+ * 이 파일이 스스로 선언한 "임베드 마크업에만 적용한다"는 계약을 깬다.
+ */
+.root_daum_roughmap .wrap_btn_zoom,
+.root_daum_roughmap .wrap_controllers {
+  display: none !important;
+}
