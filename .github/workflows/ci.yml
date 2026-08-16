@@ -46,4 +46,4 @@ jobs:
       - name: 프로덕션 빌드
         run: npm run build
         env:
-          GATSBY_SITE_URL: https://example.com
+          GATSBY_SITE_URL: https://chantrieu191223.github.io/
